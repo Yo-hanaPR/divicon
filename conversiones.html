@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Divisas</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        .result h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .conversion-result {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .rate-info {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .error {
+            color: #e74c3c;
+            background: #fadbd8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Conversor de Divisas</h1>
+        <p class="subtitle">Convierte entre USDT, Dólar BCV y Euro BCV a Bolívares</p>
+        
+        <div class="form-group">
+            <label for="amount">Monto a convertir:</label>
+            <input type="number" id="amount" placeholder="Ej: 100" step="0.01" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="currency">De:</label>
+            <select id="currency">
+                <option value="usdt">USDT (Tether)</option>
+                <option value="dolar_bcv">Dólar BCV</option>
+                <option value="euro_bcv">Euro BCV</option>
+            </select>
+        </div>
+        
+        <button onclick="convertCurrency()">🔄 Convertir a Bolívares</button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Calculando conversión...</p>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="result" id="result">
+            <h3>💱 Resultado de la Conversión</h3>
+            <div class="conversion-result" id="conversionResult">0.00 Bs</div>
+            <p id="conversionText"></p>
+            <p class="rate-info">Tasa de cambio: <span id="rateInfo">0.00</span></p>
+        </div>
+    </div>
+
+    <script>
+        // URL de tu backend Express (ajusta el puerto si es diferente)
+        const API_URL = 'http://localhost:3000';
+        
+        async function convertCurrency() {
+            // Obtener valores del formulario
+            const amount = document.getElementById('amount').value;
+            const currency = document.getElementById('currency').value;
+            
+            // Validaciones
+            if (!amount || amount <= 0) {
+                showError('Por favor ingresa un monto válido mayor a 0');
+                return;
+            }
+            
+            // Mostrar loading, ocultar resultados y errores anteriores
+            showLoading(true);
+            hideResult();
+            hideError();
+            
+            try {
+                // Hacer la petición a tu API Express
+                const response = await fetch(`${API_URL}/convertir/${currency}/${amount}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Mostrar resultado
+                    showResult(data);
+                } else {
+                    showError(data.error || 'Error en la conversión');
+                }
+                
+            } catch (error) {
+                showError(`Error de conexión: ${error.message}. ¿Está corriendo el backend?`);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function showResult(data) {
+            const resultDiv = document.getElementById('result');
+            const conversionResult = document.getElementById('conversionResult');
+            const conversionText = document.getElementById('conversionText');
+            const rateInfo = document.getElementById('rateInfo');
+            
+            // Formatear números
+            const amount = parseFloat(data.conversion.amount).toFixed(2);
+            const result = parseFloat(data.conversion.result).toFixed(2);
+            const rate = parseFloat(data.conversion.rate).toFixed(2);
+            
+            // Actualizar contenido
+            conversionResult.textContent = `${result} Bs`;
+            
+            const currencyNames = {
+                'usdt': 'USDT',
+                'dolar_bcv': 'Dólares BCV',
+                'euro_bcv': 'Euros BCV'
+            };
+            
+            conversionText.textContent = 
+                `${amount} ${currencyNames[data.conversion.from]} = ${result} Bolívares`;
+            
+            rateInfo.textContent = `1 ${currencyNames[data.conversion.from]} = ${rate} Bs`;
+            
+            // Mostrar resultado
+            resultDiv.style.display = 'block';
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function hideResult() {
+            document.getElementById('result').style.display = 'none';
+        }
+        
+        // Cargar tasas actuales al cargar la página
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch(`${API_URL}/tasas`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('Tasas cargadas:', data.data);
+                    // Podrías mostrar las tasas actuales en la UI
+                }
+            } catch (error) {
+                console.log('No se pudieron cargar las tasas iniciales');
+            }
+        });
+    </script>
+</body>
+</html>
