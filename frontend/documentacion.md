@@ -4,7 +4,42 @@
 
 para iniciar la aplicacion hay que ubicarse en el directorio raiz de la aplicacion, 
 y ubicarse en el directorio "conversiones" desde la terminal.
-Entonces se debe escribir npm run start en la terminal para levantar el servidor de express que escuchara las peticiones.
+Entonces se debe escribir npm start en la terminal para levantar el servidor de express que escuchara las peticiones.
+
+Recuerda que debes compilar typescript para ver la ultima version cada vez que hagas cambios en el backend. lo compilas con npm run build
+
+## Acceder a la aplicacion desde otros dispositivos
+
+Puedes visualizar la aplicacion en la red local (bien se desde otros dispositivos de la misma red local, como tu telefono, tablet, u otras computadoras) accediendo a http://192.168.68.65:5174/ o la direccion indicada en la terminal donde dice Network: http://192.168.68.65:5174/ una vez inicies el servidor de vite con NPM RUN DEV.
+
+Es decir, al ejecutar NPM RUN DEV, la terminal te mostrara la direccion de la aplicacion en localhost y tambien mostrara una serie de direcciones indicadas con la palabra NETWORK.
+La que puede ser accedida desde otros dispositivos en la misma red local es la que se encuentra en la direccion 168.68.65:5174 en este caso.
+Las que empiezan con 127 y 172 son interfaces de red de la computadora y son accesibles solo desde la misma computadora.
+
+## Acceder a los datos del backend desde el otro dispositivo que esta ejecutando el frontend
+
+
+Para que se pueda acceder a los datos del backend desde el otro dispositivo que esta ejecutando el frontend, debes 
+
+* modificar el archivo vite.config.js para agregarle la siguiente linea:
+proxy: {
+      '/api': { //colocarle /api
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''), //y la regla rewrite
+      }
+    }
+
+Ademas de 
+* agregar la direccion 0.0.0.0 como segundo parametro en la funcion listen en el archivo que hace el servidor de node.
+app.listen port, "0.0.0.0",() =>  (index.ts en este caso)
+
+Luego, 
+* en todas las partes donde el frontend hace peticiones al backend, debes agregarle /api al inicio de la peticion, como en el componente header que le cambiamos la linea
+const resp = await axios.get("http://localhost:3000/");
+por 
+const resp = await axios.get("/api/");
 
 ## Endpoints Disponibles
 

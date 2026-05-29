@@ -58,15 +58,15 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-              Esta es la página principal de tu aplicación de conversión de divisas. 
+              Esta es la página principal de tu aplicación de conversión de divisas.
               Fácil, rápido y preciso. ¡Comienza a convertir ahora!
             </p>
             {/* Contenedor interno para el contenido */}
             <div className="mx-auto">
-                <p className="">
-                    Aquí debe imprimir el mensaje que le llega desde el back
-                </p>
-                <p>Ajustar el componente Header.tsx y Footer.tsx para que se vean de borde a borde y no se vea como flotando.</p>
+              <p className="">
+                Aquí debe imprimir el mensaje que le llega desde el back
+              </p>
+              <p>Ajustar el componente Header.tsx y Footer.tsx para que se vean de borde a borde y no se vea como flotando.</p>
             </div>
           </div>
         </div>
@@ -86,8 +86,8 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
             {steps.map((item) => (
-              <div 
-                key={item.step} 
+              <div
+                key={item.step}
                 className="relative group transform hover:-translate-y-2 transition-transform duration-300"
               >
                 {/* Número del paso */}
@@ -100,7 +100,7 @@ export default function Home() {
                 {/* Card - Manteniendo tu estructura pero mejorada */}
                 <div className="bg-gradient-to-b from-white to-gray-50 rounded-2xl shadow-xl p-8 pt-12 border border-gray-100 group-hover:shadow-2xl transition-shadow">
                   <div className={`w-16 h-16 ${item.color} rounded-xl flex items-center justify-center mb-6 shadow-lg`}>
-                    
+
                   </div>
                   <h3 className="text-xl font-semibold text-gray-800 mb-3">
                     {item.title}
@@ -108,7 +108,7 @@ export default function Home() {
                   <p className="text-gray-600 leading-relaxed">
                     {item.description}
                   </p>
-                  
+
                   {/* Indicador de progreso */}
                   {item.step < 3 && (
                     <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
@@ -128,13 +128,13 @@ export default function Home() {
           <div className="mt-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-100 max-w-3xl mx-auto">
             <div className="flex items-center">
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-full p-4 mr-6">
-                </div>
+              </div>
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2">
                   ¡Y listo! Verás el equivalente en otras monedas
                 </h3>
                 <p className="text-gray-600">
-                  Con estos tres pasos podrás convertir cualquier monto y ver su equivalente en diferentes divisas, 
+                  Con estos tres pasos podrás convertir cualquier monto y ver su equivalente en diferentes divisas,
                   incluyendo tasas BCV, USDT y más.
                 </p>
               </div>
@@ -157,8 +157,8 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
               >
                 <div className="mb-6">
@@ -185,24 +185,10 @@ export default function Home() {
           <p className="text-blue-100 text-xl mb-10 max-w-2xl mx-auto">
             Convierte tu dinero ahora y obtén los mejores tipos de cambio del mercado
           </p>
-          
-          {/* Tasas destacadas */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            {[
-              { currency: 'USD/Bs', rate: '36.50', change: '+0.12' },
-              { currency: 'EUR/Bs', rate: '39.25', change: '-0.08' },
-              { currency: 'USDT/Bs', rate: '36.80', change: '+0.05' },
-              { currency: 'USD/EUR', rate: '0.92', change: '+0.01' }
-            ].map((rate, index) => (
-              <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="text-blue-100 font-medium">{rate.currency}</div>
-                <div className="text-white text-2xl font-bold my-2">{rate.rate}</div>
-                <div className={`text-sm ${rate.change.startsWith('+') ? 'text-green-300' : 'text-red-300'}`}>
-                  {rate.change}
-                </div>
-              </div>
-            ))}
-          </div>
+          <p>
+            Visita <a href="/api/docs" target="_blank" className="text-white underline font-bold">aquí</a> para ver la documentación
+          </p>
+           
         </div>
       </section>
     </div>

@@ -10,6 +10,7 @@ import Header from './templates/Header'
 import Footer from './templates/Footer'
 import './App.css'
 import Convierte from './components/Convierte';
+import Presupuestos from './components/Presupuestos';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/convierte" element={<Convierte />} />
         <Route path="/actualiza" element={<About />} />
+        <Route path="/presupuestos" element={<Presupuestos />} />
       </Routes>
       {/* Footer ocupa todo el ancho */}
       <Footer />

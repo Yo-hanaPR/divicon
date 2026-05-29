@@ -21,7 +21,7 @@ const SimpleAnimatedRates: React.FC<SimpleAnimatedRatesProps> = ({
 }) => {
   // 3. Datos por defecto (si el padre no pasa rates)
   const defaultRates: RateItem[] = [
-    { name: 'USDT', value: 420, icon: '💎' },
+    { name: 'USDT', value: 6284, icon: '💎' },
     { name: 'Dólar BCV', value: 265, icon: '🇺🇸' },
     { name: 'Euro BCV', value: 300, icon: '🇪🇺' },
   ];
