@@ -37,12 +37,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HomeController = void 0;
-const marked_1 = require("marked");
+
+// ELIMINADO: require("marked") de aquí para evitar el crash en Vercel
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const tasas_1 = __importStar(require("../services/tasas"));
+
 exports.HomeController = {
-    home: (req, res) => {
+    // 1. Convertido a async
+    home: async (req, res) => {
         res.json({
             success: true,
             message: "Bienvenido a la API de Conversión de Divisas",
@@ -52,14 +55,20 @@ exports.HomeController = {
             tasas: tasas_1.default
         });
     },
-    docs: (req, res) => {
+    // 2. Convertido a async
+    docs: async (req, res) => {
         try {
             console.log('Entra aqui?');
             // Leer el archivo markdown
             const docsPath = path_1.default.join(__dirname, '../../frontend/documentacion.md');
             const markdownContent = fs_1.default.readFileSync(docsPath, 'utf-8');
-            // Convertir markdown a HTML
-            const htmlContent = (0, marked_1.marked)(markdownContent);
+            
+            // 3. Importación dinámica en caliente (Compatible con ES Modules en CommonJS)
+            const { marked } = await import('marked');
+            
+            // 4. Convertir markdown a HTML usando la nueva constante desestructurada
+            const htmlContent = marked.parse(markdownContent);
+            
             // Crear una página HTML completa con estilos
             const fullHtml = `
 <!DOCTYPE html>
