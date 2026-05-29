@@ -143,7 +143,7 @@ app.post("/calculos", calculosController.calcular)
  *                       example: "GET /api-docs"
  */
 // Ruta de prueba
-app.get("/", HomeController.home);
+
 app.post("/tasas", HomeController.updateTasa);
 
 /**
@@ -169,7 +169,7 @@ app.get("/docs", HomeController.docs);
 
 // 1. Decirle a Express dónde están los archivos compilados del frontend
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
+app.get("/", HomeController.home);
 // 2. MODIFICA ESTA LÍNEA (Usamos una RegExp pura sin comillas)
 app.get(/^(?!\/api).*$/, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
