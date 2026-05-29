@@ -18,7 +18,7 @@ const app = (0, express_1.default)();
  * MIDDLEWARES
  */
 app.use((0, cors_1.default)({
-    origin: ['http://localhost:5174', 'http://192.168.68.65:5174'], // Esta es la URL de tu frontend
+    origin: ['http://localhost:5174', 'http://192.168.68.65:5174'], // Esta es la URL de tu frontend. Aqui se configuran los accesos que CORS permite
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -135,6 +135,7 @@ app.post("/calculos", calculosController_1.default.calcular);
  */
 // Ruta de prueba
 app.get("/", HomeController_1.default.home);
+app.post("/tasas", HomeController_1.default.updateTasa);
 /**
  * @swagger
  * /docs:
