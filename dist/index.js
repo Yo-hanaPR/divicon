@@ -11,6 +11,7 @@ const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const cors_1 = __importDefault(require("cors"));
 const calculosController_1 = __importDefault(require("./controllers/calculosController"));
 const HomeController_1 = __importDefault(require("./controllers/HomeController"));
+const path_1 = __importDefault(require("path"));
 const port = 3000;
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -155,6 +156,12 @@ app.post("/tasas", HomeController_1.default.updateTasa);
  *         description: Archivo de documentación no encontrado
  */
 app.get("/docs", HomeController_1.default.docs);
+// 1. Decirle a Express dónde están los archivos compilados del frontend
+app.use(express_1.default.static(path_1.default.join(__dirname, '../frontend/dist')));
+// 2. MODIFICA ESTA LÍNEA (Usamos una RegExp pura sin comillas)
+app.get(/^(?!\/api).*$/, (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, '../frontend/dist/index.html'));
+});
 /** LISTENER */
 app.listen(port, "0.0.0.0", () => {
     console.log(`✅ Servidor ejecutándose en: http://localhost:${port}`);

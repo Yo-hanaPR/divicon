@@ -8,6 +8,8 @@ import calculosController from './controllers/calculosController';
 import HomeController from './controllers/HomeController';
 import tasasCambio from './services/tasas';
 
+import path from 'path';
+
 const port = 3000;
 dotenv.config();
 const app = express();
@@ -24,6 +26,8 @@ app.use(cors({
 }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+
 
 /**
  * SWAGGER CONFIGURATION
@@ -163,6 +167,13 @@ app.post("/tasas", HomeController.updateTasa);
 
 app.get("/docs", HomeController.docs);
 
+// 1. Decirle a Express dónde están los archivos compilados del frontend
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// 2. MODIFICA ESTA LÍNEA (Usamos una RegExp pura sin comillas)
+app.get(/^(?!\/api).*$/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
 /** LISTENER */
 app.listen(port, "0.0.0.0",() => {
     console.log(`✅ Servidor ejecutándose en: http://localhost:${port}`);
