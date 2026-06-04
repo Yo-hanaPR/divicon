@@ -9,6 +9,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const cors_1 = __importDefault(require("cors"));
+const axios_1 = __importDefault(require("axios"));
 const calculosController_1 = __importDefault(require("./controllers/calculosController"));
 const HomeController_1 = __importDefault(require("./controllers/HomeController"));
 const path_1 = __importDefault(require("path"));
@@ -62,6 +63,29 @@ apiRouter.post("/calculos", calculosController_1.default.calcular);
 apiRouter.get("/", HomeController_1.default.home);
 apiRouter.post("/tasas", HomeController_1.default.updateTasa);
 apiRouter.get("/docs", HomeController_1.default.docs);
+apiRouter.get("/debug", async (req, res) => {
+    try {
+        const url = "https://ve.dolarapi.com/v1/dolares/oficial";
+        const response = await axios_1.default.get(url);
+        res.json({
+            success: true,
+            data: response.data
+        });
+    }
+    catch (error) {
+        res.json({
+            success: false,
+            message: error.message,
+            code: error.code,
+            stack: error.stack,
+            response: error.response ? {
+                status: error.response.status,
+                headers: error.response.headers,
+                data: error.response.data
+            } : null
+        });
+    }
+});
 // Registrar el router bajo /api (para Vercel) y bajo / (para local)
 app.use("/api", apiRouter);
 app.use("/", apiRouter);

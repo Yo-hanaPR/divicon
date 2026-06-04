@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import swaggerUI from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import cors from 'cors';
+import axios from 'axios';
 import calculosController from './controllers/calculosController';
 import HomeController from './controllers/HomeController';
 import tasasCambio from './services/tasas';
@@ -67,6 +68,28 @@ apiRouter.post("/calculos", calculosController.calcular);
 apiRouter.get("/", HomeController.home);
 apiRouter.post("/tasas", HomeController.updateTasa);
 apiRouter.get("/docs", HomeController.docs);
+apiRouter.get("/debug", async (req, res) => {
+  try {
+    const url = "https://ve.dolarapi.com/v1/dolares/oficial";
+    const response = await axios.get(url);
+    res.json({
+      success: true,
+      data: response.data
+    });
+  } catch (error: any) {
+    res.json({
+      success: false,
+      message: error.message,
+      code: error.code,
+      stack: error.stack,
+      response: error.response ? {
+        status: error.response.status,
+        headers: error.response.headers,
+        data: error.response.data
+      } : null
+    });
+  }
+});
 
 // Registrar el router bajo /api (para Vercel) y bajo / (para local)
 app.use("/api", apiRouter);

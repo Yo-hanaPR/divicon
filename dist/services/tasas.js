@@ -42,7 +42,7 @@ async function getOfficialDollarPrice() {
     }
 }
 const tasasCambio = {
-    usdt: 750, //el valor del USDT se esta tomando de aqui
+    usdt: 748.98, //el valor del USDT se esta tomando de aqui
     dolar_bcv: 37.8, // Fallback por defecto razonable
     euro_bcv: 56.62, // Fallback por defecto razonable
 };
