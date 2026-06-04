@@ -17,7 +17,7 @@ function Header() {
         console.log("🔍 Haciendo petición al backend...");
 
         // 👇 ¡CORRECTO! Usar await para esperar la respuesta
-        const resp = await axios.get("/api/"); //o http://localhost:3000/
+        const resp = await axios.get("/api"); //o http://localhost:3000/
 
         console.log("✅ Respuesta completa:", resp);
         console.log("📊 Datos recibidos:", resp.data);

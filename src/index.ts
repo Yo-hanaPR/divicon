@@ -8,6 +8,8 @@ import calculosController from './controllers/calculosController';
 import HomeController from './controllers/HomeController';
 import tasasCambio from './services/tasas';
 
+import path from 'path';
+
 const port = 3000;
 dotenv.config();
 const app = express();
@@ -49,7 +51,6 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
-
 // ============================================
 // Tasas de cambio
 // ============================================
@@ -59,117 +60,25 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
  * FUNCIONES
  */
 
-/**
- * @swagger
- * /calculos:
- *   post:
- *     summary: Realiza cálculos de conversión de divisas
- *     description: Endpoint para convertir entre diferentes monedas usando tasas de cambio actuales
- *     tags:
- *       - Conversión
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               monto:
- *                 type: number
- *                 description: Monto a convertir
- *                 example: 100
- *               monedaOrigen:
- *                 type: string
- *                 description: Moneda de origen
- *                 example: "bolivares"
- *               monedaDestino:
- *                 type: string
- *                 description: Moneda de destino
- *                 example: "dolares"
- *     responses:
- *       200:
- *         description: Conversión realizada exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 resultado:
- *                   type: number
- *       400:
- *         description: Error en los parámetros de entrada
- */
 // Router para agrupar todas las rutas de la API
 const apiRouter = express.Router();
 
 apiRouter.post("/calculos", calculosController.calcular);
-
-/**
- * @swagger
- * /:
- *   get:
- *     summary: Endpoint raíz de la API
- *     description: Devuelve información sobre la API y lista de endpoints disponibles
- *     tags:
- *       - General
- *     responses:
- *       200:
- *         description: Información básica de la API
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "API de Conversión de Divisas"
- *                 endpoints:
- *                   type: object
- *                   properties:
- *                     home:
- *                       type: string
- *                       example: "GET /home"
- *                     calculos:
- *                       type: string
- *                       example: "POST /calculos"
- *                     swagger:
- *                       type: string
- *                       example: "GET /api-docs"
- */
-// Ruta de prueba
 apiRouter.get("/", HomeController.home);
 apiRouter.post("/tasas", HomeController.updateTasa);
-
-/**
- * @swagger
- * /docs:
- *   get:
- *     summary: Documentación del sistema en formato README
- *     description: Renderiza el archivo documentacion.md como una página HTML estilizada
- *     tags:
- *       - Documentación
- *     responses:
- *       200:
- *         description: Página de documentación renderizada
- *         content:
- *           text/html:
- *             schema:
- *               type: string
- *       404:
- *         description: Archivo de documentación no encontrado
- */
-
 apiRouter.get("/docs", HomeController.docs);
 
 // Registrar el router bajo /api (para Vercel) y bajo / (para local)
 app.use("/api", apiRouter);
 app.use("/", apiRouter);
 
+// 1. Decirle a Express dónde están los archivos compilados del frontend
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// 2. Servir el frontend para cualquier ruta que no sea de la API
+app.get(/^(?!\/api).*$/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
 
 /** LISTENER */
 app.listen(port, "0.0.0.0",() => {
