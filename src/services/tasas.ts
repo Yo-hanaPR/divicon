@@ -38,7 +38,7 @@ export interface TasasCambio {
 }
 
 const tasasCambio: TasasCambio = {
-  usdt: 740, //el valor del USDT se esta tomando de aqui
+  usdt: 750, //el valor del USDT se esta tomando de aqui
   dolar_bcv: 378, //El valor del euro no se esta tomando de aqui. 
   euro_bcv: 5662, // El valor del euro no se esta tomando de aqui. 
 };
