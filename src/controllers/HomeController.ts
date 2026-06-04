@@ -2,10 +2,11 @@ import { Request, Response } from 'express';
 import { marked } from 'marked';
 import fs from 'fs';
 import path from 'path';
-import tasasCambio, { updateRate } from '../services/tasas';
+import tasasCambio, { updateRate, ensureRatesUpdated } from '../services/tasas';
 
 export const HomeController = {
-    home: (req: Request, res: Response) => {
+    home: async (req: Request, res: Response) => {
+        await ensureRatesUpdated();
         res.json({
             success: true,
             message: "Bienvenido a la API de Conversión de Divisas",

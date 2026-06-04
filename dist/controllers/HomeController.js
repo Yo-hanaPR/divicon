@@ -42,7 +42,8 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const tasas_1 = __importStar(require("../services/tasas"));
 exports.HomeController = {
-    home: (req, res) => {
+    home: async (req, res) => {
+        await (0, tasas_1.ensureRatesUpdated)();
         res.json({
             success: true,
             message: "Bienvenido a la API de Conversión de Divisas",

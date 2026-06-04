@@ -22,14 +22,17 @@ export async function getEuroPrice() {
 //en este endpoint parece que tenemos el precio oficial del BCV y del euro. https://ve.dolarapi.com/v1/cotizaciones 
 //aqui puedes ver el precio del euro https://ve.dolarapi.com/v1/euros 
 async function getOfficialDollarPrice(){
-  const url ="https://ve.dolarapi.com/v1/dolares/oficial" //extraer donde dice PROMEDIO
-  const { data } = await axios.get(url);
-  const price = data.promedio;
-  console.log(`Precio del Dolar Oficial: ${price}`);
-  return price;
+  try {
+    const url ="https://ve.dolarapi.com/v1/dolares/oficial"; //extraer donde dice PROMEDIO
+    const { data } = await axios.get(url);
+    const price = data.promedio;
+    console.log(`Precio del Dolar Oficial: ${price}`);
+    return price;
+  } catch (error) {
+    console.error("❌ Error al obtener precio del dólar oficial de dolarapi:", error);
+    return 37.8; // Fallback razonable
+  }
 }
-
-getOfficialDollarPrice()
 
 export interface TasasCambio {
   usdt: number;
@@ -38,31 +41,44 @@ export interface TasasCambio {
 }
 
 const tasasCambio: TasasCambio = {
-  usdt: 750, //el valor del USDT se esta tomando de aqui
-  dolar_bcv: 378, //El valor del euro no se esta tomando de aqui. 
-  euro_bcv: 5662, // El valor del euro no se esta tomando de aqui. 
+  usdt: 748.98, //el valor del USDT se esta tomando de aqui
+  dolar_bcv: 37.8, // Fallback por defecto razonable
+  euro_bcv: 56.62, // Fallback por defecto razonable
 };
 
-// Actualizar el precio del euro al iniciar
-getEuroPrice().then((price) => {
-  if (price && !isNaN(price)) {
-    tasasCambio.euro_bcv = price;
-    console.log(`✅ Tasa Euro actualizada en memoria: ${price}`);
+let lastFetchTime = 0;
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutos de caché en memoria
+
+export async function ensureRatesUpdated() {
+  const now = Date.now();
+  if (now - lastFetchTime > CACHE_DURATION) {
+    try {
+      console.log("🔄 Obteniendo tasas de cambio actualizadas desde la API...");
+      const [euroPrice, dollarPrice] = await Promise.all([
+        getEuroPrice(),
+        getOfficialDollarPrice()
+      ]);
+      
+      if (euroPrice && !isNaN(euroPrice)) {
+        tasasCambio.euro_bcv = euroPrice;
+      }
+      if (dollarPrice && !isNaN(dollarPrice)) {
+        tasasCambio.dolar_bcv = dollarPrice;
+      }
+      
+      lastFetchTime = now;
+      console.log("✅ Tasas actualizadas con éxito:", tasasCambio);
+    } catch (error) {
+      console.error("❌ Error al actualizar tasas en request, usando valores en memoria:", error);
+    }
   }
-}).catch((error) => {
-  console.error("❌ Error al actualizar la tasa del euro al inicio:", error);
+}
+
+// Intentar actualizar las tasas en el arranque de forma asíncrona
+ensureRatesUpdated().catch((err) => {
+  console.error("❌ Falló el fetch inicial de tasas:", err);
 });
 
-//actualizar tasa dolar BCV
-
-getOfficialDollarPrice().then((price) => {
-  if (price && !isNaN(price)) {
-    tasasCambio.dolar_bcv = price;
-    console.log(`✅ Tasa Dolar actualizada en memoria: ${price}`);
-  }
-}).catch((error) => {
-  console.error("❌ Error al actualizar la tasa del dolar al inicio:", error);
-});
 
 export function updateRate(moneda: keyof TasasCambio, value: number) {
   if (moneda in tasasCambio) {

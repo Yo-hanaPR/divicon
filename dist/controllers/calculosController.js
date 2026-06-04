@@ -4,9 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const conversionService_1 = __importDefault(require("../services/conversionService"));
+const tasas_1 = require("../services/tasas");
 const calculosController = {
-    calcular: (req, res) => {
+    calcular: async (req, res) => {
         try { // atrapa los datos del formulario, los valida y se los pasa al servicio que va a hacer la conversion.. Recibe la respuesta y la manda al cliente.
+            await (0, tasas_1.ensureRatesUpdated)();
             console.log("=== DATOS RECIBIDOS ===");
             console.log("Body:", req.body);
             const { monto, moneda } = req.body;

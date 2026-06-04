@@ -1,10 +1,12 @@
 // src/controllers/calculosController.ts
 import { Request, Response } from 'express';
 import ConversionService from '../services/conversionService';
+import { ensureRatesUpdated } from '../services/tasas';
 
 const calculosController = {
-  calcular: (req: Request, res: Response): void => {
+  calcular: async (req: Request, res: Response): Promise<void> => {
     try { // atrapa los datos del formulario, los valida y se los pasa al servicio que va a hacer la conversion.. Recibe la respuesta y la manda al cliente.
+      await ensureRatesUpdated();
       console.log("=== DATOS RECIBIDOS ===");
       console.log("Body:", req.body);
       
