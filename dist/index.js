@@ -18,7 +18,7 @@ const app = (0, express_1.default)();
  * MIDDLEWARES
  */
 app.use((0, cors_1.default)({
-    origin: ['http://localhost:5174', 'http://192.168.68.65:5174'], // Esta es la URL de tu frontend
+    origin: ['http://localhost:5174', 'http://192.168.68.65:5174'], // Esta es la URL de tu frontend. Aqui se configuran los accesos que CORS permite
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -97,7 +97,9 @@ app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.de
  *       400:
  *         description: Error en los parámetros de entrada
  */
-app.post("/calculos", calculosController_1.default.calcular);
+// Router para agrupar todas las rutas de la API
+const apiRouter = express_1.default.Router();
+apiRouter.post("/calculos", calculosController_1.default.calcular);
 /**
  * @swagger
  * /:
@@ -134,7 +136,8 @@ app.post("/calculos", calculosController_1.default.calcular);
  *                       example: "GET /api-docs"
  */
 // Ruta de prueba
-app.get("/", HomeController_1.default.home);
+apiRouter.get("/", HomeController_1.default.home);
+apiRouter.post("/tasas", HomeController_1.default.updateTasa);
 /**
  * @swagger
  * /docs:
@@ -153,7 +156,10 @@ app.get("/", HomeController_1.default.home);
  *       404:
  *         description: Archivo de documentación no encontrado
  */
-app.get("/docs", HomeController_1.default.docs);
+apiRouter.get("/docs", HomeController_1.default.docs);
+// Registrar el router bajo /api (para Vercel) y bajo / (para local)
+app.use("/api", apiRouter);
+app.use("/", apiRouter);
 /** LISTENER */
 app.listen(port, "0.0.0.0", () => {
     console.log(`✅ Servidor ejecutándose en: http://localhost:${port}`);

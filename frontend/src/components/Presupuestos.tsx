@@ -26,7 +26,7 @@ export default function Presupuestos() {
   useEffect(() => {
     const fetchRates = async () => {
       try {
-        const resp = await axios.get("/api/");
+        const resp = await axios.get("/api");
         if (resp.data && resp.data.tasas) {
           setTasas(resp.data.tasas);
         }

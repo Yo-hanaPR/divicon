@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -7,7 +40,7 @@ exports.HomeController = void 0;
 const marked_1 = require("marked");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const tasas_1 = __importDefault(require("../services/tasas"));
+const tasas_1 = __importStar(require("../services/tasas"));
 exports.HomeController = {
     home: (req, res) => {
         res.json({
@@ -200,6 +233,36 @@ exports.HomeController = {
                 success: false,
                 message: "No se pudo cargar la documentación",
                 error: error instanceof Error ? error.message : 'Error desconocido'
+            });
+        }
+    },
+    updateTasa: (req, res) => {
+        const { moneda, valor } = req.body;
+        if (!moneda || valor === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: "Faltan parámetros: moneda y valor son requeridos"
+            });
+        }
+        const numericValue = parseFloat(valor);
+        if (isNaN(numericValue)) {
+            return res.status(400).json({
+                success: false,
+                message: "El valor debe ser un número válido"
+            });
+        }
+        const success = (0, tasas_1.updateRate)(moneda, numericValue);
+        if (success) {
+            res.json({
+                success: true,
+                message: `Tasa de ${moneda} actualizada correctamente`,
+                tasas: tasas_1.default
+            });
+        }
+        else {
+            res.status(400).json({
+                success: false,
+                message: "Moneda no válida o error al actualizar"
             });
         }
     }

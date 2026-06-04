@@ -101,7 +101,10 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
  *       400:
  *         description: Error en los parámetros de entrada
  */
-app.post("/calculos", calculosController.calcular)
+// Router para agrupar todas las rutas de la API
+const apiRouter = express.Router();
+
+apiRouter.post("/calculos", calculosController.calcular);
 
 /**
  * @swagger
@@ -139,8 +142,8 @@ app.post("/calculos", calculosController.calcular)
  *                       example: "GET /api-docs"
  */
 // Ruta de prueba
-app.get("/", HomeController.home);
-app.post("/tasas", HomeController.updateTasa);
+apiRouter.get("/", HomeController.home);
+apiRouter.post("/tasas", HomeController.updateTasa);
 
 /**
  * @swagger
@@ -161,7 +164,12 @@ app.post("/tasas", HomeController.updateTasa);
  *         description: Archivo de documentación no encontrado
  */
 
-app.get("/docs", HomeController.docs);
+apiRouter.get("/docs", HomeController.docs);
+
+// Registrar el router bajo /api (para Vercel) y bajo / (para local)
+app.use("/api", apiRouter);
+app.use("/", apiRouter);
+
 
 /** LISTENER */
 app.listen(port, "0.0.0.0",() => {
