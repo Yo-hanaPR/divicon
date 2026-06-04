@@ -9,10 +9,14 @@ exports.updateRate = updateRate;
 const axios_1 = __importDefault(require("axios"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const requestHeaders = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*'
+};
 async function getEuroPrice() {
     try {
         const url = "https://ve.dolarapi.com/v1/cotizaciones";
-        const { data } = await axios_1.default.get(url);
+        const { data } = await axios_1.default.get(url, { headers: requestHeaders });
         const eurData = data.find((item) => item.moneda === "EUR");
         if (eurData && typeof eurData.promedio === 'number') {
             const price = eurData.promedio;
@@ -23,7 +27,7 @@ async function getEuroPrice() {
     }
     catch (error) {
         console.error("❌ Error al obtener precio del euro de dolarapi:", error);
-        return 566; // Fallback
+        return 65.05; // Fallback razonable actualizado (65.05 Bs en 2026)
     }
 }
 //en este endpoint parece que tenemos el precio oficial del BCV y del euro. https://ve.dolarapi.com/v1/cotizaciones 
@@ -31,20 +35,20 @@ async function getEuroPrice() {
 async function getOfficialDollarPrice() {
     try {
         const url = "https://ve.dolarapi.com/v1/dolares/oficial"; //extraer donde dice PROMEDIO
-        const { data } = await axios_1.default.get(url);
+        const { data } = await axios_1.default.get(url, { headers: requestHeaders });
         const price = data.promedio;
         console.log(`Precio del Dolar Oficial: ${price}`);
         return price;
     }
     catch (error) {
         console.error("❌ Error al obtener precio del dólar oficial de dolarapi:", error);
-        return 37.8; // Fallback razonable
+        return 56.03; // Fallback razonable actualizado (56.03 Bs en 2026)
     }
 }
 const tasasCambio = {
     usdt: 748.98, //el valor del USDT se esta tomando de aqui
-    dolar_bcv: 37.8, // Fallback por defecto razonable
-    euro_bcv: 56.62, // Fallback por defecto razonable
+    dolar_bcv: 56.03, // Fallback por defecto razonable (56.03 Bs)
+    euro_bcv: 65.05, // Fallback por defecto razonable (65.05 Bs)
 };
 let lastFetchTime = 0;
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutos de caché en memoria
