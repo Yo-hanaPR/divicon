@@ -21,7 +21,7 @@ export async function getEuroPrice() {
     throw new Error("No se encontró el promedio del Euro en la API");
   } catch (error) {
     console.error("❌ Error al obtener precio del euro de dolarapi:", error);
-    return 65.05; // Fallback razonable actualizado (65.05 Bs en 2026)
+    return 650.50; // Fallback razonable actualizado (650.50 Bs en 2026)
   }
 }
 //en este endpoint parece que tenemos el precio oficial del BCV y del euro. https://ve.dolarapi.com/v1/cotizaciones 
@@ -35,7 +35,7 @@ async function getOfficialDollarPrice(){
     return price;
   } catch (error) {
     console.error("❌ Error al obtener precio del dólar oficial de dolarapi:", error);
-    return 56.03; // Fallback razonable actualizado (56.03 Bs en 2026)
+    return 560.30; // Fallback razonable actualizado (560.30 Bs en 2026)
   }
 }
 
@@ -47,8 +47,8 @@ export interface TasasCambio {
 
 const tasasCambio: TasasCambio = {
   usdt: 748.98, //el valor del USDT se esta tomando de aqui
-  dolar_bcv: 56.03, // Fallback por defecto razonable (56.03 Bs)
-  euro_bcv: 65.05, // Fallback por defecto razonable (65.05 Bs)
+  dolar_bcv: 560.30, // Fallback por defecto razonable (560.30 Bs)
+  euro_bcv: 650.50, // Fallback por defecto razonable (650.50 Bs)
 };
 
 let lastFetchTime = 0;
@@ -96,7 +96,7 @@ export function updateRate(moneda: keyof TasasCambio, value: number) {
           const sourceFilePath = path.join(process.cwd(), 'src/services/tasas.ts');
           if (fs.existsSync(sourceFilePath)) {
             const content = fs.readFileSync(sourceFilePath, 'utf-8');
-            const updatedContent = content.replace(/(usdt:\s*)\d+/, `$1${value}`);
+            const updatedContent = content.replace(/(usdt:\s*)[\d.]+/, `$1${value}`);
             fs.writeFileSync(sourceFilePath, updatedContent, 'utf-8');
             console.log(`💾 Archivo ${sourceFilePath} actualizado con el nuevo valor de USDT: ${value}`);
           } else {
