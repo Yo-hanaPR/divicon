@@ -14,13 +14,15 @@
 }
 
 .animate-marquee {
+  display: flex;
+  width: max-content;
   animation: marquee 30s linear infinite;
 }
 
 /* Hacer que se mueva más rápido en dispositivos móviles (menos de 768px) */
 @media (max-width: 768px) {
   .animate-marquee {
-    animation-duration: 15s;
+    animation-duration: 8s;
   }
 }
 
